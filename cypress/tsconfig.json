@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["cypress"],
+    "baseUrl": ".",
+    "paths": {
+      "cypress/*": ["./*"],
+      "src/*": ["../src/*"]
+    }
+  },
+  "include": ["../node_modules/cypress", "./**/*.ts"],
+  "exclude": ["../cypress.config.ts"]
+}
