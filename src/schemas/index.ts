@@ -3,3 +3,5 @@ export * from "./get-user-response.schema";
 export * from "./user.schema";
 
 export * from "./post.schema";
+
+export * from "./pokemon";
