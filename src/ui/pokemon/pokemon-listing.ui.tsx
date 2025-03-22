@@ -8,7 +8,7 @@ export type PokemonListingProps = {
 export default function PokemonListing({ list }: PokemonListingProps) {
   return (
     <div>
-      <ul className="grid grid-cols-[repeat(auto-fit,_minmax(160px,_1fr))] gap-x-10 gap-y-8">
+      <ul className="grid xl:grid-cols-6 md:grid-cols-4 grid-cols-2 gap-x-10 gap-y-8">
         {list.map((pokemon) => (
           <PokemonCard key={pokemon.id} formattedPokemon={pokemon} />
         ))}
