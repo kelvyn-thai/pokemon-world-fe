@@ -15,6 +15,7 @@ export default function PokemonCard({
           alt={formattedPokemon.name}
           fill
           className="object-contain"
+          unoptimized
         />
       </div>
       <p>Number: {formattedPokemon.id}</p>

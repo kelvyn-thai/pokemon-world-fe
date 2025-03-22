@@ -1,38 +1,77 @@
-import { faker } from "@faker-js/faker";
+import { Suspense } from "react";
+import { LIMIT_PER_PAGE } from "@/constants";
+import { FormattedPokemon } from "@/schemas";
+import { PokemonListingResponse } from "@/schemas/pokemon/pokemon-listing-response.shema";
+import { pokemonService } from "@/services";
 import {
-  generateFakePokemonListing,
-  generateFakePokemonTypesFormatted,
-} from "@/mock";
-import {
-  PokemonListing,
   PokemonGreeting,
   PokemonFilterBox,
+  PokemonListing,
+  PokemonPaginationBoxSSR,
 } from "@/ui/pokemon";
-import PokemonPaginationBox from "@/ui/pokemon/pokemon-pagination-box.ui";
+import { extractQueryParams } from "@/utils";
 
-export default function PokemonSSR() {
+export default async function PokemonSSR({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    offset: number;
+    limit: number;
+  }>;
+}) {
+  const {
+    offset = 0,
+    limit = LIMIT_PER_PAGE,
+  }: { offset: number; limit: number } = await searchParams;
+
+  const [pokemonList, typeList]: [
+    PokemonListingResponse,
+    PokemonListingResponse,
+  ] = await Promise.all([
+    pokemonService.getPokemonList({ offset, limit }),
+    pokemonService.getPokemonTypesList(),
+  ]);
+
+  const pokemonDetailList = await Promise.all([
+    ...pokemonList.results.map((result) =>
+      pokemonService.getPokemonByURL({ url: result.url }),
+    ),
+  ]);
+
+  const formattedPokemonList: FormattedPokemon[] = pokemonDetailList.map(
+    (p) =>
+      ({
+        ...p,
+        avatarPngUrl: p.sprites.front_default,
+        avatarGifUrl: p.sprites.other.showdown.front_default,
+      }) as FormattedPokemon,
+  );
+
+  const types = typeList.results.map((result) => result.name);
+
+  const nextQuery = extractQueryParams(pokemonList.next);
+  const prevQuery = extractQueryParams(pokemonList.previous);
+
   return (
-    <div>
+    <section>
       <PokemonGreeting />
-      <PokemonFilterBox
+      <Suspense fallback={<div>Loading list types...</div>}>
+        <PokemonFilterBox
+          {...{
+            count: pokemonList.count,
+            types,
+          }}
+        />
+      </Suspense>
+      <Suspense fallback={<div>Loading list pokemon....</div>}>
+        <PokemonListing list={formattedPokemonList} />
+      </Suspense>
+      <PokemonPaginationBoxSSR
         {...{
-          count: faker.number.int({ min: 20, max: 40 }),
-          types: generateFakePokemonTypesFormatted().data,
+          next: nextQuery,
+          previous: prevQuery,
         }}
       />
-      <PokemonListing list={generateFakePokemonListing()} />
-      <PokemonPaginationBox
-        {...{
-          next: faker.internet.url(),
-          previous: faker.internet.url(),
-          // onClickPrevious: () => {
-          //   console.debug("previous");
-          // },
-          // onClickNext: () => {
-          //   console.debug("next");
-          // },
-        }}
-      />
-    </div>
+    </section>
   );
 }
