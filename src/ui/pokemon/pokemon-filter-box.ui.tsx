@@ -9,10 +9,7 @@ export type IPokemonFilterBox = {
 
 export default function PokemonFilterBox({ types, count }: IPokemonFilterBox) {
   const [selected, setSelected] = useState<string[]>([]);
-  console.debug({ types });
   const handleChangeType = (type: string) => {
-    console.info({ type });
-
     const isSelected = selected.includes(type);
     if (isSelected) {
       setSelected((prevState) => [...prevState].filter((t) => t !== type));

@@ -1,3 +1,4 @@
+import { intersectionBy } from "lodash";
 import { LIMIT_PER_PAGE } from "@/constants";
 import {
   FormattedPokemon,
@@ -6,7 +7,10 @@ import {
   PokemonEntitySchema,
   PokemonListingResponse,
   PokemonListingResponseSchema,
+  PokemonType,
+  PokemonTypeEntitySchema,
 } from "@/schemas";
+import { convertToURLSearchParams, getPreferredPokemonImage } from "@/utils";
 
 export default class PokemonService {
   constructor() {
@@ -16,10 +20,50 @@ export default class PokemonService {
   async getPokemonList({
     offset,
     limit = LIMIT_PER_PAGE,
+    type = "",
   }: {
     offset: number;
     limit: number;
+    type?: string;
   }): Promise<PokemonListingResponse> {
+    if (type.length > 0) {
+      const types = type.split(",");
+      const tasks = types.map((type) =>
+        fetch(`https://pokeapi.co/api/v2/type/${type}`, {
+          next: {
+            tags: [`$POKEMON_LISTING_${type}`],
+            revalidate: 30,
+          },
+        })
+          .then((res) => res.json())
+          .then((res) => PokemonTypeEntitySchema.parse(res)),
+      );
+
+      const responses: PokemonType[] = await Promise.all([...tasks]);
+
+      const results = responses
+        .map((res) => res.pokemon.map((p) => p.pokemon)) // extract array of Pokémon from each type response
+        .reduce((acc, current) => intersectionBy(acc, current, "name"));
+
+      const count = results.length;
+      const paginated = results.slice(offset, offset + limit);
+      const prevOffset = Math.max(0, offset - limit);
+      const nextOffset = offset + limit;
+
+      const response = {
+        previous:
+          offset === 0
+            ? null
+            : `https://pokeapi.co/api/v2/pokemon?${convertToURLSearchParams({ offset: prevOffset, limit, type })}`,
+        next:
+          nextOffset >= count
+            ? null
+            : `https://pokeapi.co/api/v2/pokemon?${convertToURLSearchParams({ limit, offset: nextOffset, type })}`,
+        results: paginated,
+        count,
+      };
+      return response;
+    }
     return fetch(
       `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`,
       {
@@ -57,8 +101,7 @@ export default class PokemonService {
     return getPokemonDetailList.map((pokemon) =>
       FormattedPokemonSchema.parse({
         ...pokemon,
-        avatarGifUrl: pokemon.sprites.other.showdown.front_default,
-        avatarPngUrl: pokemon.sprites.front_default,
+        avatarUrl: getPreferredPokemonImage(pokemon),
       } as FormattedPokemon),
     );
   }
@@ -116,8 +159,7 @@ export default class PokemonService {
       (p) =>
         ({
           ...p,
-          avatarPngUrl: p.sprites.front_default,
-          avatarGifUrl: p.sprites.other.showdown.front_default,
+          avatarUrl: getPreferredPokemonImage(p),
         }) as FormattedPokemon,
     );
 

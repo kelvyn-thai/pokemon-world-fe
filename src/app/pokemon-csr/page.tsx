@@ -27,7 +27,9 @@ export default function PokemonCSR({
     totalPages: 1,
   });
 
-  const { page = 1 }: { page: number } = use(searchParams);
+  const { page: _page = 1 }: { page: number } = use(searchParams);
+
+  const page = Number(_page);
 
   const { data: dataTypesResponse } = useSWR<{ types: string[] }>(
     "types",
@@ -77,16 +79,12 @@ export default function PokemonCSR({
         {!isLoading && (
           <PokemonPaginationBox
             {...{
-              page: Number(page),
+              page,
               totalPages: totalCountRef.current.totalPages,
             }}
           />
         )}
-        <Link
-          className="hidden"
-          href={`/pokemon-csr/${Number(page) + 1}`}
-          prefetch
-        />
+        <Link className="hidden" href={`/pokemon-csr/${page + 1}`} prefetch />
       </section>
     </SWRConfig>
   );
