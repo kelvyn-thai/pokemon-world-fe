@@ -1,10 +1,16 @@
 import { z } from "zod";
-import { PokemonListingResponseSchema } from "./pokemon-listing-response.shema";
 
-export const PokemonTypesFormattedSchema = PokemonListingResponseSchema.extend({
-  data: z.string().array(),
+export const PokemonTypeEntitySchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  pokemon: z
+    .object({
+      pokemon: z.object({
+        name: z.string(),
+        url: z.string().url(),
+      }),
+    })
+    .array(),
 });
 
-export type PokemonTypesFormatted = z.infer<typeof PokemonTypesFormattedSchema>;
-
-export type PokemonTypesResponse = z.infer<typeof PokemonListingResponseSchema>;
+export type PokemonType = z.infer<typeof PokemonTypeEntitySchema>;

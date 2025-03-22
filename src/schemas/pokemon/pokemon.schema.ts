@@ -2,24 +2,28 @@ import { z } from "zod";
 
 export const PokemonEntitySchema = z.object({
   id: z.number(),
-  order: z.number(),
   name: z.string(),
-  types: z
-    .object({
-      slot: z.number(),
-      type: z.object({
-        name: z.string(),
-        url: z.string().url(),
-      }),
-    })
-    .array(),
   sprites: z.object({
-    front_default: z.string().url(),
-    other: z.object({
-      showdown: z.object({
-        front_default: z.string().url(),
-      }),
-    }),
+    front_default: z.string().url().nullable(),
+    other: z
+      .object({
+        "official-artwork": z
+          .object({
+            front_default: z.string().url().nullable(),
+          })
+          .nullable(),
+        home: z
+          .object({
+            front_default: z.string().url().nullable(),
+          })
+          .nullable(),
+        showdown: z
+          .object({
+            front_default: z.string().url().nullable(),
+          })
+          .nullable(),
+      })
+      .nullable(),
   }),
 });
 

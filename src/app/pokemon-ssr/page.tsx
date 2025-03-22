@@ -5,30 +5,39 @@ import { PokemonListingResponse } from "@/schemas/pokemon/pokemon-listing-respon
 import { pokemonService } from "@/services";
 import {
   PokemonGreeting,
-  PokemonFilterBox,
+  PokemonFilterBoxSSR,
   PokemonListing,
   PokemonPaginationBoxSSR,
 } from "@/ui/pokemon";
-import { extractQueryParams } from "@/utils";
+import { extractQueryParams, getPreferredPokemonImage } from "@/utils";
 
 export default async function PokemonSSR({
   searchParams,
 }: {
   searchParams: Promise<{
     offset: number;
-    limit: number;
+    type: string;
   }>;
 }) {
+  const params = await searchParams;
+
   const {
-    offset = 0,
-    limit = LIMIT_PER_PAGE,
-  }: { offset: number; limit: number } = await searchParams;
+    offset: _offset,
+    type = "",
+  }: {
+    offset: number;
+    type: string;
+  } = params;
+
+  const offset = Number(_offset);
+
+  const limit = LIMIT_PER_PAGE;
 
   const [pokemonList, typeList]: [
     PokemonListingResponse,
     PokemonListingResponse,
   ] = await Promise.all([
-    pokemonService.getPokemonList({ offset, limit }),
+    pokemonService.getPokemonList({ offset, limit, type }),
     pokemonService.getPokemonTypesList(),
   ]);
 
@@ -39,15 +48,14 @@ export default async function PokemonSSR({
   ]);
 
   const formattedPokemonList: FormattedPokemon[] = pokemonDetailList.map(
-    (p) =>
+    (pokemon) =>
       ({
-        ...p,
-        avatarPngUrl: p.sprites.front_default,
-        avatarGifUrl: p.sprites.other.showdown.front_default,
+        ...pokemon,
+        avatarUrl: getPreferredPokemonImage(pokemon),
       }) as FormattedPokemon,
   );
 
-  const types = typeList.results.map((result) => result.name);
+  const typesList = typeList.results.map((result) => result.name);
 
   const nextQuery = extractQueryParams(pokemonList.next);
   const prevQuery = extractQueryParams(pokemonList.previous);
@@ -56,10 +64,13 @@ export default async function PokemonSSR({
     <section>
       <PokemonGreeting />
       <Suspense fallback={<div>Loading list types...</div>}>
-        <PokemonFilterBox
+        <PokemonFilterBoxSSR
           {...{
             count: pokemonList.count,
-            types,
+            types: typesList,
+            offset,
+            limit,
+            type,
           }}
         />
       </Suspense>
