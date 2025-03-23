@@ -1,12 +1,12 @@
 import { Suspense } from "react";
 import { Layout } from "@/components/layout";
+import { UserEntity } from "@/schemas";
+import { githubService } from "@/services";
 import {
   GreetingSection,
   GreetingSkeleton,
   GreetingWrapper,
-} from "@/modules/greeting";
-import { UserEntity } from "@/schemas";
-import { githubService } from "@/services";
+} from "@/ui/greeting";
 
 export const revalidate = 180;
 

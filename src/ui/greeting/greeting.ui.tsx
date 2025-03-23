@@ -5,7 +5,7 @@ import {
   GetUserResponseDTO,
   GetUserResponseSchema,
 } from "@/schemas";
-import { GreetingWrapper } from "./components";
+import GreetingWrapper from "./greeting-wrapper.ui";
 
 function Greeting({ userInfo }: { userInfo: Promise<UserEntity> }) {
   const res = use(userInfo);

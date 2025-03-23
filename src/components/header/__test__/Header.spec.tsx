@@ -1,13 +1,7 @@
 import "@testing-library/jest-dom";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { Header } from "@/components/header";
-import {
-  CONTACT_ME_LINK,
-  EMAIL_LINK,
-  GITHUB_LINK,
-  LINKEDIN_LINK,
-  PROJECTS_LINK,
-} from "@/constants";
+import { LINKEDIN_LINK, EMAIL_LINK, GITHUB_LINK } from "@/constants";
 
 describe("Header", () => {
   beforeEach(() => {
@@ -30,8 +24,8 @@ describe("Header", () => {
           EMAIL_LINK,
           GITHUB_LINK,
           LINKEDIN_LINK,
-          PROJECTS_LINK,
-          CONTACT_ME_LINK,
+          "/pokemon-ssr",
+          "/pokemon-csr",
         ].includes(navLink.getAttribute("href")!),
       ).toBeTruthy();
     });
