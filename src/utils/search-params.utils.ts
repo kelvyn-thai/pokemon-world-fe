@@ -12,7 +12,7 @@ export const convertToURLSearchParams = (
   const searchParams = new URLSearchParams();
 
   Object.entries(query).forEach(([key, value]) => {
-    if (value == null || value === undefined) return; // skip undefined/null
+    if (value == null || value === undefined || value === "") return; // skip undefined/null
 
     if (Array.isArray(value) && value.length > 0) {
       const joined = value.join(",");
