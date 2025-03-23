@@ -1,16 +1,24 @@
-import { FormattedPokemon } from "@/schemas";
-import PokemonCard from "./pokemon-card.ui";
+import { Children, cloneElement, JSX } from "react";
+import { PokemonListingResponse } from "@/schemas";
 
 export type PokemonListingProps = {
-  list: FormattedPokemon[];
+  pokemonList: PokemonListingResponse;
 };
 
-export default function PokemonListingCSR({ list }: PokemonListingProps) {
+export default function PokemonListing({
+  children,
+}: {
+  children: JSX.Element | JSX.Element[];
+}) {
   return (
-    <ul className="grid xl:grid-cols-6 md:grid-cols-4 grid-cols-2 gap-x-10 gap-y-8">
-      {list.map((pokemon) => (
-        <PokemonCard key={pokemon.id} formattedPokemon={pokemon} />
-      ))}
+    <ul className="grid xl:grid-cols-6 md:grid-cols-4 grid-cols-2 gap-x-10 gap-y-8 min-h-1/2">
+      {Children.map(children, (child) => {
+        const $element = cloneElement(child, {
+          ...child.props,
+          className: `cursor-pointer hover:shadow-xl border h-45 border ${child.props.className || ""}`,
+        });
+        return $element;
+      })}
     </ul>
   );
 }

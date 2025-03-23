@@ -4,11 +4,12 @@ import { PokemonListingResponse } from "@/schemas/pokemon/pokemon-listing-respon
 import { pokemonService } from "@/services";
 import {
   PokemonGreeting,
-  PokemonFilterBoxSSR,
-  PokemonListingSSR,
+  PokemonFilterBox,
+  PokemonListing,
   PokemonPaginationBoxSSR,
   PokemonTotalCount,
   PokemonCard,
+  PokemonFilterBoxSSR,
 } from "@/ui/pokemon";
 import { extractQueryParams } from "@/utils";
 
@@ -44,8 +45,8 @@ export default async function PokemonSSR({
     <section className="px-5">
       <PokemonGreeting />
       <PokemonTotalCount totalCount={pokemonList.count || 0} />
-      <Suspense fallback={<PokemonFilterBoxSSR.SkeletonLoader />}>
-        <PokemonFilterBoxSSR.FilterBoxTypes
+      <Suspense fallback={<PokemonFilterBox.SkeletonLoader />}>
+        <PokemonFilterBoxSSR
           {...{
             offset,
             limit,
@@ -53,7 +54,7 @@ export default async function PokemonSSR({
           }}
         />
       </Suspense>
-      <PokemonListingSSR>
+      <PokemonListing>
         {pokemonList.results.map((pokemon) => (
           <Suspense
             key={pokemon.name}
@@ -62,8 +63,7 @@ export default async function PokemonSSR({
             <PokemonCard.CardSSR key={pokemon.name} url={pokemon.url} />
           </Suspense>
         ))}
-      </PokemonListingSSR>
-
+      </PokemonListing>
       <PokemonPaginationBoxSSR
         {...{
           next: nextQuery,

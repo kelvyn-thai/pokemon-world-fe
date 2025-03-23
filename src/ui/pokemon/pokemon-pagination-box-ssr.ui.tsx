@@ -1,4 +1,4 @@
-import Link from "next/link";
+import PokemonPaginationBox from "./pokemon-pagination-box.ui";
 
 export type IPokemonPaginationBox = {
   next: string | null;
@@ -10,36 +10,20 @@ export default function PokemonPaginationBoxSSR({
   previous,
 }: IPokemonPaginationBox) {
   return (
-    <div className="flex flex-row justify-center items-center gap-5 m-5">
-      {previous ? (
-        <Link
-          href={previous ?? `/pokemon-ssr${previous}`}
-          className={`bg-blue-500 text-white px-2 py-2 min-w-20 rounded-4 text-center hover:bg-blue-600`}
-        >
-          Previous
-        </Link>
-      ) : (
-        <span
-          className={`bg-blue-500 text-white px-2 py-2 min-w-20 rounded-4 text-center hover:bg-blue-600 ${!previous && "cursor-not-allowed opacity-50"}`}
-        >
-          Previous
-        </span>
-      )}
+    <PokemonPaginationBox>
+      <PokemonPaginationBox.PaginationLink
+        href={previous ?? `/pokemon-ssr${previous}`}
+        isDisabled={!previous}
+      >
+        Previous
+      </PokemonPaginationBox.PaginationLink>
 
-      {next ? (
-        <Link
-          href={next ?? `/pokemon-ssr${next}`}
-          className={`bg-blue-500 text-white px-2 py-2 min-w-20 rounded-4 text-center hover:bg-blue-600 ${!next && "cursor-not-allowed"}`}
-        >
-          Next
-        </Link>
-      ) : (
-        <span
-          className={`bg-blue-500 text-white px-2 py-2 min-w-20 rounded-4 text-center hover:bg-blue-600 ${!next && "cursor-not-allowed opacity-50"}`}
-        >
-          Next
-        </span>
-      )}
-    </div>
+      <PokemonPaginationBox.PaginationLink
+        href={next ?? `/pokemon-ssr${next}`}
+        isDisabled={!next}
+      >
+        Next
+      </PokemonPaginationBox.PaginationLink>
+    </PokemonPaginationBox>
   );
 }
