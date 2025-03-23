@@ -1,59 +1,41 @@
-"use client";
+import Link, { LinkProps } from "next/link";
+import { Children, cloneElement, JSX } from "react";
 
-import { useRouter } from "next/navigation";
-import { convertToURLSearchParams } from "@/utils";
-
-export type IPokemonPaginationBox = {
-  page: number;
-  totalPages: number;
-  type: string;
+export const PaginationBtn = (
+  props: React.ButtonHTMLAttributes<HTMLButtonElement> & {
+    isDisabled: boolean;
+  },
+) => {
+  return <button {...props} />;
 };
 
-export default function PokemonPaginationBoxCSR({
-  page,
-  totalPages,
-  type,
-}: IPokemonPaginationBox) {
-  const router = useRouter();
-  const previousPage = Math.max(1, page - 1);
-  const nextPage = page + 1;
-  const isDisabledPrev = page === 1;
-  const isDisabledNext = nextPage > totalPages;
+export const PaginationLink = (
+  props: LinkProps & { isDisabled: boolean; children: JSX.Element | string },
+) => {
+  const { isDisabled, children } = props;
 
+  if (isDisabled) {
+    return <span {...props}>{children}</span>;
+  }
+  return <Link {...props}>{children}</Link>;
+};
+
+export default function PokemonPaginationBox({
+  children,
+}: {
+  children: JSX.Element | JSX.Element[];
+}) {
   return (
-    <div className="flex flex-row justify-center items-center gap-5 m-5">
-      <button
-        onClick={() => {
-          if (isDisabledPrev) {
-            return;
-          }
-          router.push(
-            `/pokemon-csr?${convertToURLSearchParams({
-              page: previousPage,
-              type,
-            })}`,
-          );
-        }}
-        className={`bg-blue-500 text-white px-2 py-2 min-w-20 rounded-4 text-center ${page === 1 && "cursor-not-allowed opacity-50"}`}
-      >
-        Previous
-      </button>
-      <button
-        onClick={() => {
-          if (isDisabledNext) {
-            return;
-          }
-          router.push(
-            `/pokemon-csr?${convertToURLSearchParams({
-              page: nextPage,
-              type,
-            })}`,
-          );
-        }}
-        className={`bg-blue-500 text-white px-2 py-2 min-w-20 rounded-4 text-center ${nextPage > totalPages && "cursor-not-allowed opacity-50"}`}
-      >
-        Next
-      </button>
-    </div>
+    <ul className="flex flex-row justify-center items-center gap-5 m-5">
+      {Children.map(children, (child: JSX.Element) => {
+        return cloneElement(child, {
+          ...child.props,
+          className: `bg-blue-500 text-white px-2 py-2 min-w-20 rounded-4 text-center hover:bg-blue-600 ${child.props?.isDisabled && "cursor-not-allowed opacity-50"}`,
+        });
+      })}
+    </ul>
   );
 }
+
+PokemonPaginationBox.PaginationBtn = PaginationBtn;
+PokemonPaginationBox.PaginationLink = PaginationLink;
