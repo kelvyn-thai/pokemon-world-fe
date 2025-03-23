@@ -34,7 +34,7 @@ export default function PokemonFilterBoxCSR({
     [selectedType],
   );
 
-  if ((isLoading && !data?.types) || error) {
+  if (isLoading || !data?.types || error) {
     return <PokemonFilterBox.SkeletonLoader />;
   }
 

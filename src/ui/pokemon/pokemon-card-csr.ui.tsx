@@ -24,7 +24,7 @@ const PokemonCardCSR = ({ url }: { url: string }) => {
     };
   });
 
-  if ((isLoading && !data?.formattedPokemon) || error) {
+  if (isLoading || !data?.formattedPokemon || error) {
     return <PokemonCard.SkeletonLoader />;
   }
 
