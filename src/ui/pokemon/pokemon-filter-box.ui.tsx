@@ -5,14 +5,12 @@ import { convertToURLSearchParams } from "@/utils";
 
 export type IPokemonFilterBox = {
   type: string;
-  count: number;
   types: string[];
   page: number;
 };
 
 export default function PokemonFilterBox({
   types,
-  count,
   type: selectedType,
   page,
 }: IPokemonFilterBox) {
@@ -20,9 +18,6 @@ export default function PokemonFilterBox({
 
   return (
     <div className="mb-5">
-      <h2 className="font-medium text-neutral-1000 mb-4">
-        Total Count: {count}
-      </h2>
       <div>
         <ul className="flex flex-wrap flex-row gap-4">
           <li className="text-black  rounded-4 min-w-6 px-2 py-4 text-center">

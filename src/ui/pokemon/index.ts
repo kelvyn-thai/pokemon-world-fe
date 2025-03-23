@@ -6,3 +6,5 @@ export { default as PokemonFilterBoxCSR } from "./pokemon-filter-box.ui";
 export { default as PokemonFilterBoxSSR } from "./pokemon-filter-box-ssr.ui";
 export { default as PokemonPaginationBoxSSR } from "./pokemon-pagination-box-ssr.ui";
 export { default as PokemonPaginationBoxCSR } from "./pokemon-pagination-box.ui";
+
+export { default as PokemonTotalCount } from "./pokemon-total-count.ui";

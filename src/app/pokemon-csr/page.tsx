@@ -14,6 +14,7 @@ import {
   PokemonGreeting,
   PokemonListing,
   PokemonPaginationBoxCSR,
+  PokemonTotalCount,
 } from "@/ui/pokemon";
 import { getPreferredPokemonImage } from "@/utils";
 import { getTotalPagesFromCount } from "@/utils/pagination.utils";
@@ -82,9 +83,9 @@ export default function PokemonCSR({
     <SWRConfig>
       <section>
         <PokemonGreeting />
+        <PokemonTotalCount totalCount={count} />
         <PokemonFilterBoxCSR
           {...{
-            count,
             types: dataTypesResponse?.types || [],
             type,
             page,
