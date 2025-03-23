@@ -14,7 +14,7 @@ import {
   PokemonPaginationBoxCSR,
   PokemonTotalCount,
 } from "@/ui/pokemon";
-import { getTotalPagesFromCount } from "@/utils/pagination.utils";
+import { getTotalPagesFromCount } from "@/utils";
 
 const PokemonCardCSR = dynamic(
   () => import("@/ui/pokemon/pokemon-card-csr.ui"),

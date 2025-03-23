@@ -7,7 +7,9 @@ import {
 } from "@/schemas";
 import { getPreferredPokemonImage } from "@/utils";
 
-export const generateFakePokemon = (): PokemonEntity => {
+export const generateFakePokemon = (
+  overrides?: Partial<PokemonEntity>,
+): PokemonEntity => {
   const types = [
     "fire",
     "water",
@@ -36,8 +38,10 @@ export const generateFakePokemon = (): PokemonEntity => {
           front_default: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/${faker.number.int({ min: 1, max: 1010 })}.gif`,
         },
       },
+      ...overrides?.sprites,
     },
     types: [randomType()],
+    ...overrides,
   });
 };
 

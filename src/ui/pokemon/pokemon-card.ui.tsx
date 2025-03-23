@@ -31,7 +31,9 @@ export default function PokemonCard({
       className="flex flex-col justify-center items-center gap-y-4 cursor-pointer hover:shadow-xl border h-45"
       data-testid={formattedPokemon.id}
     >
-      <p>{formattedPokemon.name}</p>
+      <p className="font-medium truncate text-neutral-800 max-w-[calc(100%_-_32px)]">
+        {formattedPokemon.name}
+      </p>
       <div className="relative w-full aspect-square max-w-24">
         <Image
           src={formattedPokemon.avatarUrl}
@@ -43,7 +45,9 @@ export default function PokemonCard({
           placeholder="blur"
         />
       </div>
-      <p>Number: {formattedPokemon.id}</p>
+      <p className="text-sm leading-4 truncate text-neutral-900 max-w-[calc(100%_-_32px)]">
+        Number: {formattedPokemon.id}
+      </p>
     </li>
   );
 }
