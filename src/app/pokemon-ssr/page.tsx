@@ -1,15 +1,18 @@
 import { Suspense } from "react";
 import { LIMIT_PER_PAGE } from "@/constants";
-import { FormattedPokemon } from "@/schemas";
 import { PokemonListingResponse } from "@/schemas/pokemon/pokemon-listing-response.shema";
 import { pokemonService } from "@/services";
 import {
   PokemonGreeting,
   PokemonFilterBoxSSR,
-  PokemonListing,
+  PokemonListingSSR,
   PokemonPaginationBoxSSR,
+  PokemonTotalCount,
+  PokemonCard,
 } from "@/ui/pokemon";
-import { extractQueryParams, getPreferredPokemonImage } from "@/utils";
+import { extractQueryParams } from "@/utils";
+
+const limit = LIMIT_PER_PAGE;
 
 export default async function PokemonSSR({
   searchParams,
@@ -22,7 +25,7 @@ export default async function PokemonSSR({
   const params = await searchParams;
 
   const {
-    offset: _offset,
+    offset: _offset = 0,
     type = "",
   }: {
     offset: number;
@@ -31,52 +34,36 @@ export default async function PokemonSSR({
 
   const offset = Number(_offset);
 
-  const limit = LIMIT_PER_PAGE;
-
-  const [pokemonList, typeList]: [
-    PokemonListingResponse,
-    PokemonListingResponse,
-  ] = await Promise.all([
-    pokemonService.getPokemonList({ offset, limit, type }),
-    pokemonService.getPokemonTypesList(),
-  ]);
-
-  const pokemonDetailList = await Promise.all([
-    ...pokemonList.results.map((result) =>
-      pokemonService.getPokemonByURL({ url: result.url }),
-    ),
-  ]);
-
-  const formattedPokemonList: FormattedPokemon[] = pokemonDetailList.map(
-    (pokemon) =>
-      ({
-        ...pokemon,
-        avatarUrl: getPreferredPokemonImage(pokemon),
-      }) as FormattedPokemon,
-  );
-
-  const typesList = typeList.results.map((result) => result.name);
+  const pokemonList: PokemonListingResponse =
+    await pokemonService.getPokemonList({ offset, limit, type });
 
   const nextQuery = extractQueryParams(pokemonList.next);
   const prevQuery = extractQueryParams(pokemonList.previous);
 
   return (
-    <section>
+    <section className="px-5">
       <PokemonGreeting />
-      <Suspense fallback={<div>Loading list types...</div>}>
-        <PokemonFilterBoxSSR
+      <PokemonTotalCount totalCount={pokemonList.count || 0} />
+      <Suspense fallback={<PokemonFilterBoxSSR.SkeletonLoader />}>
+        <PokemonFilterBoxSSR.FilterBoxTypes
           {...{
-            count: pokemonList.count,
-            types: typesList,
             offset,
             limit,
             type,
           }}
         />
       </Suspense>
-      <Suspense fallback={<div>Loading list pokemon....</div>}>
-        <PokemonListing list={formattedPokemonList} />
-      </Suspense>
+      <PokemonListingSSR>
+        {pokemonList.results.map((pokemon) => (
+          <Suspense
+            key={pokemon.name}
+            fallback={<PokemonCard.SkeletonLoader />}
+          >
+            <PokemonCard.CardSSR key={pokemon.name} url={pokemon.url} />
+          </Suspense>
+        ))}
+      </PokemonListingSSR>
+
       <PokemonPaginationBoxSSR
         {...{
           next: nextQuery,

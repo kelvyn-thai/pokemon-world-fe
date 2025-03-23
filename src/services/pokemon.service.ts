@@ -1,8 +1,6 @@
 import { intersectionBy } from "lodash";
 import { LIMIT_PER_PAGE } from "@/constants";
 import {
-  FormattedPokemon,
-  FormattedPokemonSchema,
   PokemonEntity,
   PokemonEntitySchema,
   PokemonListingResponse,
@@ -10,7 +8,7 @@ import {
   PokemonType,
   PokemonTypeEntitySchema,
 } from "@/schemas";
-import { convertToURLSearchParams, getPreferredPokemonImage } from "@/utils";
+import { convertToURLSearchParams } from "@/utils";
 
 export default class PokemonService {
   constructor() {
@@ -75,35 +73,6 @@ export default class PokemonService {
     )
       .then((res) => res.json())
       .then((res) => PokemonListingResponseSchema.parse(res));
-  }
-
-  async getFormattedPokemonList({
-    limit = LIMIT_PER_PAGE,
-    offset = 0,
-  }: {
-    limit: number;
-    offset: number;
-  }): Promise<FormattedPokemon[]> {
-    const response = await fetch(
-      `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`,
-    )
-      .then((res) => res.json())
-      .then((res) => PokemonListingResponseSchema.parse(res));
-
-    const getPokemonDetailList: PokemonEntity[] = await Promise.all([
-      ...response.results.map((r) =>
-        fetch(r.url)
-          .then((res) => res.json())
-          .then((res) => PokemonEntitySchema.parse(res)),
-      ),
-    ]);
-
-    return getPokemonDetailList.map((pokemon) =>
-      FormattedPokemonSchema.parse({
-        ...pokemon,
-        avatarUrl: getPreferredPokemonImage(pokemon),
-      } as FormattedPokemon),
-    );
   }
 
   async getPokemonByID({ id }: { id: number }): Promise<PokemonEntity> {

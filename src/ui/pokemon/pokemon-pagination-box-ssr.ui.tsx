@@ -14,13 +14,13 @@ export default function PokemonPaginationBoxSSR({
       {previous ? (
         <Link
           href={previous ?? `/pokemon-ssr${previous}`}
-          className={`bg-blue-500 text-white px-2 py-2 min-w-20 rounded-4 text-center`}
+          className={`bg-blue-500 text-white px-2 py-2 min-w-20 rounded-4 text-center hover:bg-blue-600`}
         >
           Previous
         </Link>
       ) : (
         <span
-          className={`bg-blue-500 text-white px-2 py-2 min-w-20 rounded-4 text-center ${!previous && "cursor-not-allowed opacity-50"}`}
+          className={`bg-blue-500 text-white px-2 py-2 min-w-20 rounded-4 text-center hover:bg-blue-600 ${!previous && "cursor-not-allowed opacity-50"}`}
         >
           Previous
         </span>
@@ -29,13 +29,13 @@ export default function PokemonPaginationBoxSSR({
       {next ? (
         <Link
           href={next ?? `/pokemon-ssr${next}`}
-          className={`bg-blue-500 text-white px-2 py-2 min-w-20 rounded-4 text-center ${!next && "cursor-not-allowed"}`}
+          className={`bg-blue-500 text-white px-2 py-2 min-w-20 rounded-4 text-center hover:bg-blue-600 ${!next && "cursor-not-allowed"}`}
         >
           Next
         </Link>
       ) : (
         <span
-          className={`bg-blue-500 text-white px-2 py-2 min-w-20 rounded-4 text-center ${!next && "cursor-not-allowed opacity-50"}`}
+          className={`bg-blue-500 text-white px-2 py-2 min-w-20 rounded-4 text-center hover:bg-blue-600 ${!next && "cursor-not-allowed opacity-50"}`}
         >
           Next
         </span>
