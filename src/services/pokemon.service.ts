@@ -133,42 +133,6 @@ export default class PokemonService {
       .then((res) => res.json())
       .then((res) => PokemonListingResponseSchema.parse(res));
   }
-
-  async getPokemonFullInfo({
-    limit,
-    offset,
-  }: {
-    limit: number;
-    offset: number;
-  }): Promise<{
-    pokemonList: PokemonListingResponse;
-    pokemonDetailList: PokemonEntity[];
-    formattedPokemonList: FormattedPokemon[];
-  }> {
-    const [pokemonList]: [PokemonListingResponse] = await Promise.all([
-      pokemonService.getPokemonList({ offset, limit }),
-    ]);
-
-    const pokemonDetailList = await Promise.all([
-      ...pokemonList.results.map((result) =>
-        pokemonService.getPokemonByURL({ url: result.url }),
-      ),
-    ]);
-
-    const formattedPokemonList: FormattedPokemon[] = pokemonDetailList.map(
-      (p) =>
-        ({
-          ...p,
-          avatarUrl: getPreferredPokemonImage(p),
-        }) as FormattedPokemon,
-    );
-
-    return {
-      formattedPokemonList,
-      pokemonList,
-      pokemonDetailList,
-    };
-  }
 }
 
 export const pokemonService = new PokemonService();

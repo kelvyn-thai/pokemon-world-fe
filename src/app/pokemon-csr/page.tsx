@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { use, useRef } from "react";
+import { use, useMemo } from "react";
 import useSWR, { SWRConfig } from "swr";
 import { LIMIT_PER_PAGE } from "@/constants";
 import {
@@ -10,24 +10,20 @@ import {
 } from "@/schemas";
 import { pokemonService } from "@/services";
 import {
-  PokemonFilterBox,
+  PokemonFilterBoxCSR,
   PokemonGreeting,
   PokemonListing,
+  PokemonPaginationBoxCSR,
 } from "@/ui/pokemon";
-import PokemonPaginationBox from "@/ui/pokemon/pokemon-pagination-box.ui";
+import { getPreferredPokemonImage } from "@/utils";
 import { getTotalPagesFromCount } from "@/utils/pagination.utils";
 
 export default function PokemonCSR({
   searchParams,
 }: {
-  searchParams: Promise<{ page: number }>;
+  searchParams: Promise<{ page: number; type: string }>;
 }) {
-  const totalCountRef = useRef<{ count: number; totalPages: number }>({
-    count: 0,
-    totalPages: 1,
-  });
-
-  const { page: _page = 1 }: { page: number } = use(searchParams);
+  const { page: _page = 1, type = "" } = use(searchParams);
 
   const page = Number(_page);
 
@@ -42,48 +38,66 @@ export default function PokemonCSR({
     },
   );
 
-  const { data, isLoading } = useSWR<{
+  const { data } = useSWR<{
     pokemonList: PokemonListingResponse;
     pokemonDetailList: PokemonEntity[];
     formattedPokemonList: FormattedPokemon[];
-  }>(
-    `${page}`,
-    async () => {
-      const limit = LIMIT_PER_PAGE;
-      const offset = (page >= 1 ? page - 1 : page) * limit;
-      const res = await pokemonService.getPokemonFullInfo({ limit, offset });
+  }>(`$POKEMON_CSR_${page}-${type}`, async () => {
+    const limit = LIMIT_PER_PAGE;
+    const offset = (page >= 1 ? page - 1 : page) * limit;
 
-      if (!totalCountRef.current.count) {
-        totalCountRef.current.count = res.pokemonList.count;
-        totalCountRef.current.totalPages = getTotalPagesFromCount(
-          res.pokemonList.count,
-        );
-      }
+    const pokemonList: PokemonListingResponse =
+      await pokemonService.getPokemonList({ offset, limit, type });
 
-      return res;
-    },
-    { refreshInterval: 30 * 1000 },
+    const pokemonDetailList = await Promise.all([
+      ...pokemonList.results.map((result) =>
+        pokemonService.getPokemonByURL({ url: result.url }),
+      ),
+    ]);
+
+    const formattedPokemonList: FormattedPokemon[] = pokemonDetailList.map(
+      (pokemon) =>
+        ({
+          ...pokemon,
+          avatarUrl: getPreferredPokemonImage(pokemon),
+        }) as FormattedPokemon,
+    );
+
+    return {
+      pokemonList,
+      pokemonDetailList,
+      formattedPokemonList,
+    };
+  });
+
+  const { count = 0, totalPages = 1 } = useMemo(
+    () => ({
+      count: data?.pokemonList?.count || 0,
+      totalPages: getTotalPagesFromCount(data?.pokemonList?.count || 0),
+    }),
+    [data?.pokemonList],
   );
 
   return (
     <SWRConfig>
       <section>
         <PokemonGreeting />
-        <PokemonFilterBox
+        <PokemonFilterBoxCSR
           {...{
-            count: totalCountRef.current.count,
+            count,
             types: dataTypesResponse?.types || [],
+            type,
+            page,
           }}
         />
         <PokemonListing list={data?.formattedPokemonList || []} />
-        {!isLoading && (
-          <PokemonPaginationBox
-            {...{
-              page,
-              totalPages: totalCountRef.current.totalPages,
-            }}
-          />
-        )}
+        <PokemonPaginationBoxCSR
+          {...{
+            page,
+            type,
+            totalPages,
+          }}
+        />
         <Link className="hidden" href={`/pokemon-csr/${page + 1}`} prefetch />
       </section>
     </SWRConfig>

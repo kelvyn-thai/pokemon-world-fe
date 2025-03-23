@@ -13,7 +13,7 @@ export default function PokemonFilterBoxSSR({
   types,
   count,
   offset,
-  // limit,
+  limit,
   type: selectedType,
 }: IPokemonFilterBox) {
   const selectedTypes = selectedType.length > 0 ? selectedType.split(",") : [];
@@ -36,7 +36,7 @@ export default function PokemonFilterBoxSSR({
                 className={`border text-black min-w-16 px-2 py-4 text-center ${selectedTypes.includes(type) && "text-white bg-blue-500"}`}
                 href={`/pokemon-ssr?${convertToURLSearchParams({
                   offset,
-                  // limit,
+                  limit,
                   type: isSelected
                     ? selectedTypes.filter((t) => t !== type)
                     : [...selectedTypes, type],
