@@ -11,14 +11,18 @@ export const SkeletonLoader = () => {
 };
 
 export const CardSSR = ({ url }: { url: string }) => {
+  debugger;
   const pokemon = use(pokemonService.getPokemonByURL({ url }));
 
-  const formattedPokemon = FormattedPokemonSchema.parse({
+  const { success, data, error } = FormattedPokemonSchema.safeParse({
     ...pokemon,
     avatarUrl: getPreferredPokemonImage(pokemon),
   });
 
-  return <PokemonCard formattedPokemon={formattedPokemon} />;
+  if (!data || !success || error) {
+    return <PokemonCard.SkeletonLoader />;
+  }
+  return <PokemonCard formattedPokemon={data} />;
 };
 
 export default function PokemonCard({
