@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## What is this project?
 
-## Getting Started
+- This project using for testing from It Consultis.
+- Production: https://pokemon-world-fe.vercel.app/
+- Copyright [Kelvyn Thai](thainguyenhoangphatit@gmail.com)
+- Make by [Kelvyn Thai](https://github.com/kelvyn-thai)
 
-First, run the development server:
+## How to run this project?
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Run yarn
+- Run yarn dev to start app on port 3000
+- Go to SSR Pokemon: https://pokemon-world-fe.vercel.app/pokemon-ssr
+- Go to CSR Pokemon: https://pokemon-world-fe.vercel.app/pokemon-csr
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Available scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+In the project directory, you can run:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command           |           Description            | ENV |
+| :---------------- | :------------------------------: | :-: |
+| yarn              |           Install NPM.           |
+| yarn dev          |        Start development         | DEV |
+| yarn build        |        Build application         |     |
+| yarn jest:test    | Start Unit test on detached mode | DEV |
+| yarn cypress:test | Start E2E test on detached mode  | DEV |
+| yarn cypress:open |    Start E2E test on browser     | DEV |
 
-## Learn More
+## Main Stack
 
-To learn more about Next.js, take a look at the following resources:
+- Structure project followed by: [nextjs](https://nextjs.org/docs/getting-started)
+- Manage build, deploy, start,...: [next](https://www.npmjs.com/package/next)
+- Cascading Style Sheets: [Tailwindcss](https://tailwindcss.com/)
+- Find, fix, format, v...v problems in JavaScript code :
+  - Eslint: https://eslint.org/
+  - Husky: https://typicode.github.io/husky
+  - Lint-staged: https://github.com/okonet/lint-staged
+  - Prettier: https://prettier.io/
+- Unit test [Jest](https://jestjs.io/)
+- E2E test [Cypress](https://docs.cypress.io/guides/overview/why-cypress)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Developer
 
-You can check out [the Next.js GitHub Repoitory](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+==============================================================================
